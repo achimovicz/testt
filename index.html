@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bildrasterungs-Filter</title>
+    <style>
+        #imageCanvas {
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <input type="range" id="rasterSizeSlider" min="1"
+    max="20" value="5" onchange="updateRasterSize()">
+    <span id="rasterSizeValue">Rastergröße: 5</span>
+
+    <br>
+
+    <canvas id="imageCanvas"></canvas>
+
+    <script>
+        var rasterSize = 5;
+        var canvas = document.getElementById('imageCanvas');
+        var ctx = canvas.getContext('2d');
+        var rasterSizeSlider = document.getElementById('rasterSizeSlider');
+        var rasterSizeValue = document.getElementById('rasterSizeValue');
+
+        var img = new Image();
+        img.src = './A1.jpg';
+
+        img.onload = function () {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            applyRasterFilter();
+        };
+
+        function applyRasterFilter() {
+            var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            for (var x = 0; x < imgData.width; x++) {
+                for (var y = 0; y < imgData.height; y++) {
+
+                    var rasterX = ((x / rasterSize) | 0) * rasterSize;
+                    var rasterY = ((y / rasterSize) | 0) * rasterSize;
+
+                    var rasterValIndex = (rasterX + rasterY * imgData.width) * 4;
+
+                    r = imgData.data[rasterValIndex];
+                    g = imgData.data[rasterValIndex + 1];
+                    b = imgData.data[rasterValIndex + 2];
+                    a = imgData.data[rasterValIndex + 3];
+
+                    // Hier können Sie den Code zum Setzen der Pixel in x, y ergänzen
+                    // Zum Beispiel: ctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + (a / 255) + ')';
+                    // ctx.fillRect(x, y, 1, 1);
+                }
+            }
+        }
+
+        function updateRasterSize() {
+            rasterSize = parseInt(rasterSizeSlider.value, 10);
+            rasterSizeValue.textContent = 'Rastergröße: ' + rasterSize;
+            applyRasterFilter();
+        }
+    </script>
+</body>
+</html>
